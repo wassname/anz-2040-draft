@@ -1,0 +1,5 @@
+handover.md
+sources/resources/ai-2027-for-anz-june-2026.md
+*.err
+.DS_Store
+__pycache__/

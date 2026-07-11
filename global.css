@@ -1,0 +1,609 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --vivid-background: #fffff8;
+  --vivid-foreground: #000;
+  --dull-background: #f0f0f0;
+  --dull-foreground: #666;
+  --accent: #2A623D; /* Slytherin green */
+  --plan-s-background: #31566f;
+  --plan-a-background: #2A623D;
+  --race-background: #8B0000;
+  --sabotage-background: #c77400;
+  --slowdown-background: #2A623D;
+}
+
+.race {
+  --accent: var(--race-background);
+}
+
+@property --w {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 0.00000001%;
+}
+
+/* Extra px the supplement essay's content column is nudged right on wide layouts
+   (toc rail visible). Factored out because TWO rules must agree on it: the shift
+   applied to the content column's text (.supplement-content-shift) and the equal
+   shift applied to the header row (.supplement-header-row) so "AI 2040" lines up
+   with the content title. Edit here to move both together. */
+:root {
+  --supplement-content-shift: 30px;
+}
+
+.main-grid {
+  display: grid;
+  margin-left: auto;
+  margin-right: auto;
+  grid-template-areas:
+    "gap1 tocGap   header   header    header  gap2"
+    "gap1 topGraph topGraph topGraph  topGraph   gap2"
+    "gap1 toc      content  graphgap  graph   gap2"
+    "gap1 toc2     choice   graphgap2 graph  gap2"
+    "gap1 fgap     fgap     fgap      fgap    gap2"
+    "gap1 gap3     cFooter   footer   graphFooter  gap2";
+  /* toc column: as the page narrows, the flexible gap columns (1fr/0.3fr)
+     give up their space first while the rail keeps its full 220px. Once the
+     viewport can't fit the other columns at their preferred widths (4px gap +
+     700px content + 32px graphgap + 430px graph = 1166px), the toc column
+     itself shrinks — down to 140px — and the rail labels wrap to the narrower
+     column. Below 1281px the rail is hidden entirely (see below). */
+  grid-template-columns: 4px clamp(140px, calc(100vw - 1166px), 220px) minmax(300px, 700px) minmax(32px, 1fr) minmax(min-content, 430px) 0.3fr;
+  grid-template-rows: auto auto auto auto auto;
+  padding-top: 8px;
+}
+
+/* Pushes the central content column an extra 30px to the right, on top of the
+   30px gained by widening the toc column. Only applied on layouts where the
+   toc rail is visible (≥1281px); narrower views hide the rail entirely. */
+@media (min-width: 1281px) {
+  .supplement-content-shift {
+    padding-left: var(--supplement-content-shift);
+  }
+}
+
+/* Aligns the supplement header ("AI 2040") with the essay's content column.
+   The header grid area is `header header header` (parent columns 3–5), so it
+   already starts exactly at the `content` column's left edge — left-aligned
+   header text begins there for free. The only remaining offset is the same
+   `--supplement-content-shift` that nudges the content column's *text* right
+   (padding on <main>), so we apply that identical shift to the header row and
+   the two line up. Scoped to the toc-rail layouts (≥1281px), where the shift
+   applies; narrower views don't shift the content, so the header already
+   matches without it. */
+@media (min-width: 1281px) {
+  .supplement-header-row {
+    padding-left: var(--supplement-content-shift);
+  }
+}
+
+@media (max-width: 1280px) {
+  .main-grid.main-grid {
+    grid-template-columns: 32px 0px minmax(300px, 700px) minmax(64px, 1fr) minmax(min-content, 430px) 8px;
+  }
+  .section-nav {
+    display: none;
+  }
+}
+
+@media (max-width: 930px) {
+  .main-grid.main-grid {
+    grid-template-areas:
+      "gap1 header   header    header    gap2"
+      "gap1 topGraph topGraph  graph     gap2"
+      "gap1 content  content   content   gap2"
+      "gap1 choice   choice    choice    gap2"
+      "gap1 fgap     fgap      fgap      gap2"
+      "gap1 cFooter  cFooter   cFooter    gap2";
+    grid-template-columns: 10px minmax(0px, 900px) 64px 0px 10px;
+  }
+}
+
+
+@media (min-width: 1600px) {
+  .main-grid.main-grid {
+    grid-template-columns: 8px minmax(250px, 1fr) minmax(300px, 700px) minmax(32px, 96px) minmax(min-content, 430px) minmax(8px, 1fr);
+  }
+}
+
+body.antialiased {
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+summary {
+  cursor: pointer;
+}
+
+details b,
+details strong,
+.report-details b,
+.report-details strong {
+  font-weight: 600;
+}
+
+.content-with-chart {
+  padding-top: 50vh;
+  display: flex;
+  align-items: flex-start;
+  gap: 40px;
+}
+
+.main-content {
+  flex: 1;
+}
+
+.sticky-chart-container {
+  position: sticky;
+  top: 20px;
+  width: 330px;
+  overflow: hidden;
+  margin-top: 250px;
+  opacity: 0.05;
+  transition: opacity 0.15s ease-in-out;
+  flex-grow: 0.35;
+  border: 1.5px solid grey;
+  border-radius: 12px;
+  padding: 8px;
+}
+
+.grid-small {
+  grid-template-areas:
+    "rdmultiple           rdmultiple           rdmultiple"
+    "computeBudgets       computeBudgets       goalsPieChart"
+    "capability           capability           goalsPieChart"
+    "keystats             keystats             keystats"
+    "techBuckets          techBuckets          techBuckets"
+    "agentPopulation      agentPopulation      agentPopulation";
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto auto 1fr auto auto auto;
+  /* grid-template-rows: 130px 60px 60px 100px 100px 50px; */
+}
+
+/* Single column grid layout for mobile fullscreen view */
+.grid-small-mobile {
+  grid-template-areas:
+    "rdmultiple rdmultiple"
+    "capability goalsPieChart"
+    "keystats keystats"
+    "techBuckets techBuckets"
+    "agentPopulation agentPopulation";
+  grid-template-columns: auto 100px;
+  grid-template-rows: auto auto auto auto auto;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+.footnote-hover {
+  position: relative;
+  text-decoration: underline dotted;
+  cursor: pointer;
+}
+
+/* The container for the actual footnote DOM */
+.footnote-popup {
+  position: absolute;
+  top: 1.2em; /* or bottom: 1.2em, etc. */
+  left: 0;
+  width: 250px;
+  max-width: 300px;
+  background-color: rgba(245, 245, 245, 0.95);
+  color: #444;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0.5rem;
+  font-size: 0.85rem;
+  line-height: 1.2;
+  z-index: 9999;
+}
+
+/* Show the .footnote-popup when hovering over the parent link */
+.footnote-hover:hover .footnote-popup {
+  display: block;
+}
+
+/* HUD PIP and fullscreen mode styles */
+.hud-pip {
+  transform-origin: bottom right;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  z-index: 999;
+}
+
+.hud-pip [data-state="open"] {
+  display: none !important; /* Disable tooltips in PIP mode */
+}
+
+.hud-fullscreen {
+  z-index: 999;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 3.9%;
+    --primary: 0 0% 9%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96.1%;
+    --secondary-foreground: 0 0% 9%;
+    --muted: 0 0% 96.1%;
+    --muted-foreground: 0 0% 45.1%;
+    --accent: 0 0% 96.1%;
+    --accent-foreground: 0 0% 9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
+    --ring: 0 0% 3.9%;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+    --radius: 0.5rem;
+  }
+  /* .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  } */
+}
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+h2 {
+  scroll-margin-top: 25vh;
+}
+
+/* Add this CSS rule into your global stylesheet */
+/* Reveal the text by clipping it from the bottom upward */
+@keyframes revealDown {
+  0% {
+    clip-path: inset(0 0 100% 0); /* Clipped from the bottom (hidden) */
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+    clip-path: inset(0 0 95% 0);
+  }
+  100% {
+    clip-path: inset(0 0 0 0); /* Fully visible */
+    opacity: 1;
+  }
+}
+
+/* CSS class to trigger the revealDown animation */
+.animate-revealDown {
+  animation: revealDown 1.5s ease-out forwards;
+}
+
+/* Audio player scrub label: slide the chapter title in/out as you scrub. */
+@keyframes scrub-enter-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@keyframes scrub-enter-left {
+  from { transform: translateX(-100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@keyframes scrub-exit-left {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(-100%); opacity: 0; }
+}
+@keyframes scrub-exit-right {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(100%); opacity: 0; }
+}
+.animate-scrub-enter-right { animation: scrub-enter-right 0.3s ease-out; }
+.animate-scrub-enter-left { animation: scrub-enter-left 0.3s ease-out; }
+.animate-scrub-exit-left { animation: scrub-exit-left 0.3s ease-out forwards; }
+.animate-scrub-exit-right { animation: scrub-exit-right 0.3s ease-out forwards; }
+
+/* Override katex default larger font size */
+.katex.katex {
+  font-size: 1em;
+}
+
+number-flow-react::part(left),
+number-flow-react::part(right),
+number-flow-react::part(left)::after,
+number-flow-react::part(right)::after,
+number-flow-react::part(symbol) {
+	padding: calc(var(--number-flow-mask-height, 0.25em) / 2) 0;
+}
+
+.essay-footnote {
+  flex-direction: row;
+  gap: 10px;
+}
+
+.essay-footnote p, .essay-footnote ol, .essay-footnote ul {
+  font-size: 14px;
+  margin: 0;
+  line-height: 1.5;
+}
+
+main h1 {
+  font-size: 52px;
+}
+
+.footnote-page p {
+  display: inline;
+}
+
+.summary-chart p {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.tab-boxes p, .tab-boxes li {
+  font-size: 16px;
+  line-height: 1.45;
+  margin-bottom: 0.5em;
+}
+
+.tab-boxes ol {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.tab-boxes a {
+  text-decoration: none;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+@supports not selector(:first-child) {
+  .requires-modern-css {
+    display: none !important;
+  }
+}
+
+.scrollbar-hide, .scrollbar-hide * {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  scrollbar-color: transparent transparent;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+blockquote {
+  border: 2px solid #232323;
+  border-radius: 8px;
+  padding: .25rem 1.5rem;
+  margin: 1rem 0;
+}
+
+.good-ending-text { font-size: 1.4rem; }
+.good-ending-text h1 { font-size: 3rem; margin: 1.25em 0 1em 0; }
+
+@media (max-width: 767px) {
+  .good-ending-text h1 { font-size: 2rem; line-height: 1.3; }
+  /* Keep the heading ladder descending under the 2rem mobile h1: tufte's
+     desktop sizes (h2 2.25rem, h3 1.85rem, h4 1.5rem) would otherwise
+     render h2 BIGGER than h1 and h4 bigger than the scaled h3. h5 keeps
+     tufte's 1.3rem, which already sits below the 1.35rem h4. */
+  .good-ending-text h2 { font-size: 1.7rem; }
+  .good-ending-text h3 { font-size: 1.45rem; }
+  .good-ending-text h4 { font-size: 1.35rem; }
+  /* ai-2027's mobile body size. tufte.css carries the same rule at 730px,
+     but the .good-ending-text font-size above out-specifies it (paragraphs
+     inherit), so it must be restated at this level. 767px matches the rest
+     of this site's mobile breakpoint. */
+  .good-ending-text { font-size: 1.25rem; }
+  .good-ending-text :where(p, dl, ol, ul, summary, blockquote, li) {
+    line-height: 1.45;
+  }
+}
+.good-ending-text :where(p, dl, ol, ul, summary, blockquote, li) { font-size: inherit; }
+
+/* Narrow non-mobile window (two-column playbook layout, 930–1024px): shave a
+   couple px off body text and scale headings down ~10%. Set once here at the
+   top-level container instead of threading a class through Markdown.tsx.
+   Line-height is unitless (1.5) so it auto-follows whatever font-size wins —
+   change the size and the leading tracks it, no separate override needed. */
+@media (min-width: 930px) and (max-width: 1135px) {
+  .good-ending-text { font-size: 1.2rem }
+  .good-ending-text :where(p, dl, ol, ul, summary, blockquote, li) { line-height: 1.5; }
+  .good-ending-text h1 { font-size: 2.4rem; }
+  .good-ending-text h2 { font-size: 2.03rem; }
+  .good-ending-text h3 { font-size: 1.53rem; }
+  .good-ending-text h4 { font-size: 1.35rem; }
+  .good-ending-text h5 { font-size: 1.17rem; }
+}
+.markdown-content.supplement-essay-prose {
+  box-sizing: border-box;
+}
+.markdown-content.supplement-essay-prose > :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.markdown-content.supplement-essay-prose > h1,
+.markdown-content.supplement-essay-prose > h2,
+.markdown-content.supplement-essay-prose > h3,
+.markdown-content.supplement-essay-prose > h4,
+.markdown-content.supplement-essay-prose > h5,
+.markdown-content.supplement-essay-prose > h6 {
+  max-width: none;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-wrap: break-word;
+}
+/* Top-level Part headings (h1) get a strong gap above to separate the major
+   sections — base tufte h1 has margin-top:0, which left Part 2 cramped. */
+.markdown-content.supplement-essay-prose > h1 {
+  margin-top: 5rem;
+}
+
+/* Images carry a small negative left margin for optical alignment in the main
+   essay column; inside an expanded details section that would push them across
+   the section's brown left rule. Reset it there so they stay inside the rule. */
+details .ml-\[-20px\],
+details .ml-\[-8px\] {
+  margin-left: 0 !important;
+}
+
+/* "Back to contents" arrow in the left margin of supplement headings. Hidden
+   everywhere else (the link target #top-toc only exists in supplements). */
+.toc-backlink {
+  display: none;
+}
+.markdown-content.supplement-essay-prose > :is(h1, h2, h3, h4, h5, h6) {
+  position: relative;
+}
+/* On every level of section heading inside supplements (h1 = top-level
+   section like Executive Summary / Verifying the deal; h2/h3 = sub-sections
+   and timeline rows). Scoped via :has(#top-toc) so the triangle only
+   appears in supplements whose body actually contains a :::toc block —
+   right now that's only verification-plan. Em-sized border-triangle,
+   vertically centered. */
+.markdown-content.supplement-essay-prose:has(#top-toc) > :is(h1, h2, h3) .toc-backlink {
+  display: inline-block;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 0.32em solid transparent;
+  border-right: 0.32em solid transparent;
+  border-bottom: 0.5em solid rgba(0, 0, 0, 0.2);
+  text-decoration: none;
+  transition: border-bottom-color 0.15s ease-out;
+}
+.markdown-content.supplement-essay-prose:has(#top-toc) > :is(h1, h2, h3) .toc-backlink:hover {
+  border-bottom-color: rgba(0, 0, 0, 0.55);
+}
+
+.ai2030-feedback-scroll-area {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.ai2030-feedback-scroll-area::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+/* Feed panel on /feedback sliding open from its collapsed strip. */
+@keyframes ai2030-feed-slide-in {
+  from {
+    width: 44px;
+  }
+  to {
+    width: 420px;
+  }
+}
+
+/* Persistent highlight on the selected text while its feedback dialog is open,
+   so it stays visible even after focus moves into the dialog inputs. */
+::highlight(ai2030-feedback-selection) {
+  background-color: #accef7;
+  color: black;
+}
+
+/* While the feedback dialog's persistent highlight is showing, the native
+   selection is kept alive (so the reader can still copy the text) but restyled
+   to the same color so the two highlights render as one. */
+.ai2030-feedback-selection-active ::selection {
+  background-color: #accef7;
+  color: black;
+}
+
+/* Gentle pop when a submitted-feedback margin icon first appears (page load,
+   and right after the feedback dialog fades out on submit). */
+@keyframes ai2030-feedback-icon-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.ai2030-feedback-icon-pop {
+  animation: ai2030-feedback-icon-pop 180ms ease-out;
+}
+
+/* Subtle dotted underline on passages the reader has already left feedback on
+   (rendered by SubmittedFeedbackLayer via the CSS Custom Highlight API). */
+::highlight(ai2030-feedback-submitted) {
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: rgba(0, 0, 0, 0.45);
+  text-underline-offset: 3px;
+}
+
+/* Solid underline on the passage whose margin icon/popover is being hovered,
+   so the reader can tell which line the feedback belongs to. */
+::highlight(ai2030-feedback-submitted-active) {
+  text-decoration-line: underline;
+  text-decoration-style: solid;
+  text-decoration-color: rgba(0, 0, 0, 0.8);
+  text-underline-offset: 3px;
+}
+
+.ai2030-feedback-inline-highlight {
+  background-color: rgba(255, 220, 90, 0.45);
+  border-radius: 2px;
+  padding: 0 1px;
+  cursor: pointer;
+  transition: background-color 0.08s ease-out;
+}
+.ai2030-feedback-inline-highlight:hover {
+  background-color: rgba(255, 200, 60, 0.6);
+}
+.ai2030-feedback-inline-highlight[data-active="true"] {
+  background-color: rgba(255, 180, 30, 0.7);
+}
+
+/* Hovering a feed card whose quote lives inside a collapsed expandable section
+   tints that section's summary the same warm highlight color, so the reviewer
+   can spot which section to open. */
+.ai2030-feedback-details-highlight {
+  background-color: rgba(255, 180, 30, 0.7);
+  border-radius: 4px;
+  transition: background-color 0.08s ease-out;
+}

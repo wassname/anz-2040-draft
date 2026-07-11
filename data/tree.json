@@ -1,0 +1,53 @@
+{
+ "comment": "Claude: single source for tree.svg. Each item has a tier (row) and left-to-right order; two items per row max. `p` and edge flows record our probability mass conditional on the 2029 decision mattering. Display widths fit the text. The HTML build fails if an href no longer matches a prose heading.",
+ "title": "Choose a path",
+ "canvas": {"w": 560, "top": 40, "row_h": 115, "node_h": 56, "gap": 44, "floor_w": 130, "p_scale": 300, "choice_w": 150},
+ "kinds": {
+  "global":  {"fill": "#e0e0e0", "stroke": "#888888"},
+  "hazard":  {"fill": "#f4cccc", "stroke": "#990000"},
+  "anz":     {"fill": "#ffd966", "stroke": "#b8860b"},
+  "robust":  {"fill": "#b6d7a8", "stroke": "#38761d"},
+  "outcome": {"fill": "#cfe2f3", "stroke": "#3d85c6"}
+ },
+ "nodes": [
+  {"id": "A",    "tier": 0, "order": 0, "kind": "robust",  "href": "#1-prepare-before-it-looks-urgent-2026-28", "title": "1. Prepare early", "sub": "2026-28: royalties, biosecurity, allies"},
+  {"id": "F",    "tier": 0, "order": 1, "kind": "robust",  "href": "#2-train-the-people-the-treaty-needs-2026-29", "title": "2. Build the people", "sub": "2026-29: safety testers, inspectors"},
+  {"id": "FORK", "tier": 1, "order": 0, "kind": "global",  "href": "#what-australia-and-new-zealand-can-do", "title": "2029: the US chooses", "sub": "go-slow deal with China, or race?"},
+  {"id": "VII",  "tier": 2, "order": 0, "kind": "outcome", "p": 0.10, "href": "#vii-boring-decade-about-10", "title": "VII. Boring decade", "sub": "~10%"},
+  {"id": "AL",   "tier": 2, "order": 1, "kind": "hazard",  "p": 0.90, "href": "#i-doom-about-50", "title": "RISK: AI escapes control", "sub": "~75% racing, ~25% in the deal"},
+  {"id": "I",    "tier": 3, "order": 0, "kind": "outcome", "p": 0.50, "href": "#i-doom-about-50", "title": "I. Doom", "sub": "~50%"},
+  {"id": "PC",   "tier": 3, "order": 1, "kind": "hazard",  "p": 0.40, "href": "#ii-someone-elses-empire-about-25", "title": "RISK: power seized", "sub": "one actor holds the AI"},
+  {"id": "II",   "tier": 4, "order": 0, "kind": "outcome", "p": 0.25, "href": "#ii-someone-elses-empire-about-25", "title": "II. Someone else's empire", "sub": "~25% — seized abroad"},
+  {"id": "HOME", "tier": 4, "order": 1, "kind": "hazard",  "href": "#ix-homegrown-autocracy-free-beer-and-rugby-for-life", "title": "RISK: power grabbed at home", "sub": "seized in our own country"},
+  {"id": "B",    "tier": 5, "order": 0, "kind": "anz",     "href": "#3-ask-for-terms-before-signing-2029", "title": "3. Sign, or set our price?", "sub": "the deal reaches us, 2029"},
+  {"id": "IX",   "tier": 5, "order": 1, "kind": "outcome", "href": "#ix-homegrown-autocracy-free-beer-and-rugby-for-life", "title": "IX. Homegrown autocracy", "sub": "citizens stop being needed"},
+  {"id": "E",    "tier": 6, "order": 0, "kind": "anz",     "href": "#6-choose-a-side-if-the-deal-collapses-2030s", "title": "6. If the deal collapses", "sub": "US bloc, concert, or neutral?"},
+  {"id": "C",    "tier": 6, "order": 1, "kind": "anz",     "href": "#4-host-allied-compute-2030-32", "title": "4. Host compute here?", "sub": "2030-32"},
+  {"id": "VIII", "tier": 7, "order": 0, "kind": "outcome", "href": "#viii-middle-power-concert", "title": "VIII. Middle-power concert", "sub": ""},
+  {"id": "V",    "tier": 7, "order": 1, "kind": "outcome", "href": "#v-allied-compute-host", "title": "V. Allied compute host", "sub": ""},
+  {"id": "VI",   "tier": 8, "order": 0, "kind": "outcome", "href": "#vi-garrison-ally", "title": "VI. Garrison ally", "sub": ""},
+  {"id": "D",    "tier": 8, "order": 1, "kind": "anz",     "href": "#5-keep-a-public-stake-in-the-machine-economy-2031-34", "title": "5. Tax it, own a share?", "sub": "2031-34"},
+  {"id": "III",  "tier": 9, "order": 0, "kind": "outcome", "href": "#iii-dividend-commonwealth", "title": "III. Dividend commonwealth", "sub": ""},
+  {"id": "IV",   "tier": 9, "order": 1, "kind": "outcome", "href": "#iv-quarry-economy", "title": "IV. Quarry economy", "sub": "drift default"}
+ ],
+ "edges": [
+  {"from": "A",    "to": "FORK", "flow": 0.50},
+  {"from": "F",    "to": "FORK", "flow": 0.50},
+  {"from": "FORK", "to": "VII",  "flow": 0.10, "label": "stalls"},
+  {"from": "FORK", "to": "AL",   "flow": 0.90, "label": "race / deal"},
+  {"from": "AL",   "to": "I",    "flow": 0.50, "label": "control lost"},
+  {"from": "AL",   "to": "PC",   "flow": 0.40, "label": "control kept"},
+  {"from": "PC",   "to": "II",   "flow": 0.24, "label": "seized abroad"},
+  {"from": "PC",   "to": "HOME", "flow": 0.05, "label": "seized at home"},
+  {"from": "PC",   "to": "B",    "flow": 0.11, "label": "power stays spread"},
+  {"from": "HOME", "to": "IX",   "flow": 0.05, "label": "no public stake"},
+  {"from": "B",    "to": "C",    "flow": 0.08, "label": "set our price"},
+  {"from": "B",    "to": "E",    "flow": 0.03, "label": "if deal collapses", "dashed": true},
+  {"from": "C",    "to": "V",    "flow": 0.04, "label": "host it"},
+  {"from": "C",    "to": "D",    "flow": 0.04, "label": "stay supplier"},
+  {"from": "E",    "to": "VIII", "flow": 0.015, "label": "concert"},
+  {"from": "E",    "to": "VI",   "flow": 0.015, "label": "US bloc"},
+  {"from": "D",    "to": "III",  "flow": 0.02, "label": "public stake"},
+  {"from": "D",    "to": "IV",   "flow": 0.02, "label": "no stake"}
+ ]
+}
