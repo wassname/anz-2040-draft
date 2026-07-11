@@ -37,6 +37,8 @@ html { font-size: 17px; }
 body { max-width: 42em; margin: 4rem auto; padding: 0 1.25rem;
   background: var(--bg); color: var(--fg);
   font-family: Georgia, 'Times New Roman', serif; line-height: 1.55; }
+.hero { width: min(96vw, 1200px); margin: 1.4rem 50% 2rem; transform: translateX(-50%); }
+.hero img { width: 100%; height: auto; display: block; }
 h1,h2,h3 { font-weight: normal; line-height: 1.2; margin: 2.2rem 0 0.6rem; }
 h1 { font-size: 2rem; } h2 { font-size: 1.5rem; border-bottom: 1px solid var(--rule); padding-bottom: .2rem; }
 h3 { font-size: 1.2rem; color: #333; }
@@ -51,6 +53,10 @@ code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .88em; 
    stays a legible size (a wide canvas stretched to the column would shrink the text) */
 .tree { margin: 1.5rem auto; max-width: 560px; overflow-x: auto; }
 .tree svg { width: 100%; height: auto; display: block; }
+@media (max-width: 600px) {
+  body { margin-top: 2rem; }
+  .hero { width: 100vw; margin-top: 1rem; margin-bottom: 1.5rem; }
+}
 hr { border: none; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
 footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--rule);
   color: var(--muted); font-size: .85rem; }

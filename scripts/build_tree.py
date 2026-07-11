@@ -55,14 +55,32 @@ def edge_pts(a, b):
     # same row: side to side
     return (ax + aw / 2, ay, bx - bw / 2, by) if bx > ax else (ax - aw / 2, ay, bx + bw / 2, by)
 
+def edge_path(e):
+    a, b = e["from"], e["to"]
+    ax, ay, aw = pos[a]
+    bx, by, bw = pos[b]
+    route = e.get("route")
+    if route == "outside-right":
+        x1, x2 = ax + aw / 2, bx + bw / 2
+        lane = max(x1, x2) + 55
+        return f"M{x1:.0f},{ay:.0f} C{lane:.0f},{ay:.0f} {lane:.0f},{by:.0f} {x2:.0f},{by:.0f}", (lane, (ay + by) / 2)
+    if route == "outside-left":
+        x1, x2 = ax - aw / 2, bx - bw / 2
+        lane = min(x1, x2) - 45
+        return f"M{x1:.0f},{ay:.0f} C{lane:.0f},{ay:.0f} {lane:.0f},{by:.0f} {x2:.0f},{by:.0f}", (lane, (ay + by) / 2)
+    x1, y1, x2, y2 = edge_pts(a, b)
+    my = (y1 + y2) / 2
+    path = f"M{x1:.0f},{y1:.0f} C{x1:.0f},{my:.0f} {x2:.0f},{my:.0f} {x2:.0f},{y2:.0f}"
+    lf = 0.30 if abs(y2 - y1) > ROW_H else 0.5
+    return path, (x1 + lf * (x2 - x1), y1 + lf * (y2 - y1) - 2)
+
 FLOWSCALE = 26   # edge thickness = flow (probability mass through the edge) * this
 edge_labels = []
 for e in d["edges"]:
-    x1, y1, x2, y2 = edge_pts(e["from"], e["to"])
-    my = (y1 + y2) / 2
+    path, label_pos = edge_path(e)
     sw = max(1.0, e.get("flow", 0.02) * FLOWSCALE)   # thick where the mass pours, thin in the trickle
     dash = ' stroke-dasharray="5 5"' if e.get("dashed") else ""
-    out.append(f'<path d="M{x1:.0f},{y1:.0f} C{x1:.0f},{my:.0f} {x2:.0f},{my:.0f} {x2:.0f},{y2:.0f}" '
+    out.append(f'<path d="{path}" '
                f'fill="none" stroke="#a9a99f" stroke-width="{sw:.1f}"{dash}/>')
     if e.get("label") and not e.get("dashed"):       # dashed (secondary) edges stay unlabelled
         # place the label near the source (in the gap just below the parent) so labels on
@@ -70,8 +88,7 @@ for e in d["edges"]:
         # adjacent edges: label at the midpoint (siblings have spread apart there, so they
         # don't overlap). tier-skipping edges: push the label near the source, into the gap
         # below the parent, so it doesn't land on the boxes in the row it crosses.
-        lf = 0.30 if abs(y2 - y1) > ROW_H else 0.5
-        edge_labels.append((x1 + lf * (x2 - x1), y1 + lf * (y2 - y1) - 2, e["label"]))
+        edge_labels.append((*label_pos, e["label"]))
 # draw labels last, each on a background halo so no stroke cuts through the text
 for lx, ly, lab in edge_labels:
     lw = len(lab) * 6.6 + 10
