@@ -40,7 +40,7 @@
   {"from": "PC",   "to": "BAD",  "flow": 0.30, "label": "not great"},
   {"from": "PC",   "to": "HOME", "flow": 0.42, "label": "42% great globally"},
   {"from": "HOME", "to": "IX",   "flow": 0.126, "label": "30% conditional (ours)"},
-  {"from": "HOME", "to": "B",    "flow": 0.294, "label": "remains democratic", "route": "outside-right"},
+  {"from": "HOME", "to": "B",    "flow": 0.294, "route": "outside-right"},
   {"from": "B",    "to": "C",    "choice": true, "label": "set our price"},
   {"from": "B",    "to": "E",    "choice": true, "dashed": true},
   {"from": "C",    "to": "V",    "choice": true, "label": "host it"},
