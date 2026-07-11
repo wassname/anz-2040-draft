@@ -2,7 +2,7 @@
 """Build tree.svg from data/tree.json. No dependencies beyond stdlib, no JS in the
 output. Layout is automatic from each item's `tier` (row) and `order` (left-to-right),
 so there are no hand-tuned coordinates to drift. Box width fits its title and subtitle;
-probability mass is shown by edge width and explicit percentage labels. Every item is an <a> into its prose section and carries a
+probability mass is shown by edge width, with exact values in path tooltips. Every item is an <a> into its prose section and carries a
 <title> tooltip. The viewBox makes it scale to any screen width (phones included).
 -- claude (opus) + wassname, 2026-07"""
 import json, math, html, pathlib
@@ -18,8 +18,8 @@ TITLE = d.get("title", "")
 TITLE_H = 82 if TITLE else 0   # hero heading band at the top (ai-2040 "Choose a Path" style)
 
 def width(n):
-    # box fits its text (probability is carried honestly by the flow-weighted edges and
-    # the explicit % labels, not by node size, which can't be honest at variable text length)
+    # Claude: probability is carried by flow-weighted edges and tooltips, not node size,
+    # which cannot stay proportional when text lengths differ.
     fit = max(len(n["title"]) * 7.3, len(n.get("sub", "")) * 5.7) + 26
     return max(fit, CHOICE_W)
 
@@ -80,8 +80,12 @@ for e in d["edges"]:
     path, label_pos = edge_path(e)
     sw = max(1.0, e.get("flow", 0.02) * FLOWSCALE)   # thick where the mass pours, thin in the trickle
     dash = ' stroke-dasharray="5 5"' if e.get("dashed") else ""
-    out.append(f'<path d="{path}" '
-               f'fill="none" stroke="#a9a99f" stroke-width="{sw:.1f}"{dash}/>')
+    path_start = (f'<path d="{path}" fill="none" stroke="#a9a99f" '
+                  f'stroke-width="{sw:.1f}"{dash}>')
+    if e.get("tooltip"):
+        out.append(f'{path_start}<title>{html.escape(e["tooltip"])}</title></path>')
+    else:
+        out.append(f'{path_start}</path>')
     if e.get("label") and not e.get("dashed"):       # dashed (secondary) edges stay unlabelled
         # place the label near the source (in the gap just below the parent) so labels on
         # tier-skipping edges don't land on top of the boxes in the row they cross
