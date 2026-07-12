@@ -86,7 +86,7 @@ for e in d["edges"]:
         out.append(f'{path_start}<title>{html.escape(e["tooltip"])}</title></path>')
     else:
         out.append(f'{path_start}</path>')
-    if e.get("label"):
+    if e.get("label") and not e.get("dashed"):       # dashed (secondary) edges stay unlabelled
         # place the label near the source (in the gap just below the parent) so labels on
         # tier-skipping edges don't land on top of the boxes in the row they cross
         # adjacent edges: label at the midpoint (siblings have spread apart there, so they
