@@ -49,9 +49,8 @@ table { border-collapse: collapse; margin: 1.2rem 0; font-size: .92rem; }
 th,td { text-align: left; padding: .35rem .8rem; border-bottom: 1px solid var(--rule); }
 thead th { border-bottom: 2px solid #999; }
 code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .88em; }
-/* the tree is a tall, narrow two-per-row flow; cap its width and centre it so the text
-   stays a legible size (a wide canvas stretched to the column would shrink the text) */
-.tree { margin: 1.5rem auto; max-width: 560px; overflow-x: auto; }
+/* Claude: one responsive tree fills the viewport without a separate scrolling layout. */
+.tree { width: 100vw; margin: 1.5rem 50%; transform: translateX(-50%); }
 .tree svg { width: 100%; height: auto; display: block; }
 @media (max-width: 600px) {
   body { margin-top: 2rem; }
